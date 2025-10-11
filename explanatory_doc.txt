@@ -1,0 +1,31 @@
+EXPLANATORY DOCUMENT - Battery Pack SOH Prediction 
+----------------------------------
+
+Overview:
+This part of the project focuses on predicting the State of Health (SOH) of battery packs using a
+Linear Regression model trained on the PulseBat Dataset.
+
+From Gorup Code: 
+- Created initial data reading and random splitting logic.
+- Implemented iteration through dataset rows and extraction of numeric data (U1–U21).
+- Established foundation for dataset processing (read_data(), split_data()).
+
+(Added Functionality):
+1. Completed full data preprocessing using pandas.
+   - Handled missing values and extracted U1–U21 cell voltage readings.
+   - Aggregated individual cell voltages to compute an average pack voltage.
+
+2. Implemented Linear Regression Model:
+   - Used scikit-learn's LinearRegression() for training.
+   - Split data into 80% training and 20% testing.
+
+3. Evaluated Model:
+   - Computed R² Score, Mean Squared Error (MSE), and Mean Absolute Error (MAE).
+
+4. Applied 0.6 Threshold Classification:
+   - Added logic to label each battery as “Healthy” or “Problem” based on predicted SOH.
+
+5. Exported Results:
+   - Generated `soh_predictions.csv` containing real vs. predicted SOH and classification results.
+
+

@@ -1,57 +1,80 @@
-import pandas as pd #tool for opening excel file
-import random
-from sympy import symbols, integrate
+# Project: Battery Pack SOH Prediction 
+# Date: October 12, 2025
+# Description: Train and evaluate a Linear Regression model on PulseBat Dataset
 
-# load dataaset
+import pandas as pd
+import numpy as np
+import random
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
+# ======================
+# 1. LOAD DATA
+# ======================
 data = pd.read_excel('PulseBat Dataset.xlsx')
 
-raw_data = [] #stores original set of data 
-train_data = []
-test_data = []
+# ======================
+# 2. PREPROCESSING
+# ======================
+# Used the read_data() logic was meant to extract numeric cell values per row (U1–U21)
+#cleaned and handled missing or invalid entries here.
 
-def main():
-    read_data();
-    analysis_measured_charge();
+# sorting the dataset by battery packs' ID
+data = data.sort_values(by=['Mat', 'No.', 'ID'], ascending=True, ignore_index=True)
 
-def read_data():
-    for i, row in data.iterrows(): #loop through the rows
-        row_data = [];
-        for j in range(0, len(data.columns)): # loop through the value from U1 to SOH
-            try:
-                row_data.append(float(data.iloc[i, j]));  #insert value of one battery at a time
-            except (TypeError, ValueError):
-                row_data.append(data.iloc[i, j]);
+# Extract U1–U21 columns (cell voltages)
+cell_columns = [col for col in data.columns if col.startswith('U')]
+data = data.dropna(subset=['SOH'])  # ensure SOH is present
+data['avg_voltage'] = data[cell_columns].mean(axis=1)  # aggregate cell voltages
 
-        raw_data.append(row_data); #insert the set of values at a time into the data pool
+# Define features (independent variables)
+X = data[cell_columns + ['avg_voltage']].values
 
-def split_data():
-    quota = int(len(raw_data)*0.2); #number of dataset for testing
-    
-    #first run for random selection
-    for i in range (0,len(raw_data)):
-        chance = random.random();
-        if chance <= 0.3 and quota > 0:
-            test_data.append(raw_data[i]);
-            quota -= 1;
-        else:
-            train_data.append(raw_data[i]);
-    
-    # second run if the test_data is not exactly 20% of the original data pool(134)
-    if quota > 0:
-        need = 134 - len(test_data); #the number of dataset need to fill up the the test data pool
-        
-        #loop through the train data pool
-        for i in range(0,need): 
-            index = random.randint(0, len(train_data)-1);  #pick a random index 
-            test_data.append(train_data.pop(index)); #move the data from train pool to test pool
+# Define target (dependent variable)
+y = data['SOH'].values
 
-def analysis_measured_charge():
-        for i in range(0,len(raw_data)):
-            if raw_data[i][1] == 1.0:
-                print (raw_data[i]);
+# ======================
+# 3. SPLIT DATA
+# ======================
+# Previously used random selection for 20%; we'll use sklearn for cleaner reproducibility
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# ======================
+# 4. TRAIN LINEAR REGRESSION MODEL
+# ======================
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# ======================
+# 5. EVALUATE MODEL
+# ======================
+y_pred = model.predict(X_test)
+
+r2 = r2_score(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+
+print("=== MODEL EVALUATION RESULTS ===")
+print(f"R² Score: {r2:.4f}")
+print(f"Mean Squared Error (MSE): {mse:.6f}")
+print(f"Mean Absolute Error (MAE): {mae:.6f}")
+
+# ======================
+# 6. CLASSIFICATION USING THRESHOLD
+# ======================
+# ask user for battery threshold value
+threshold = float(input("Enter battery classification threshold: "))
+
+data['Predicted SOH'] = model.predict(X)
+data['Battery Status'] = np.where(data['Predicted SOH'] >= threshold, 'Healthy', 'Problem')
+
+# Save output for verification
+data[['SOH', 'Predicted SOH', 'Battery Status']].to_csv('soh_predictions.csv', index=False)
+print("\nResults saved to soh_predictions.csv")
 
 
-# Call the main function
-main();
 
-#print(data.head(10));
+

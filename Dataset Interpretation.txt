@@ -1,0 +1,15 @@
+The dataset describe the SOH, SOE and Q of 67 battery packs at different state of charge.
+
+What values are changing:
+
+SOC, SOE, individual cell's voltage reading, SOH(does not change for the same battery)
+
+Visible relationship:
+for the same battery: when SOC +, SOE +, charge +, SOH remains 
+
+Suggested Relationship to predict SOH:
+1. Ui voltage vs SOH
+2. Q vs SOH
+3. SOE vs SOH
+4. SOC vs SOH
+
