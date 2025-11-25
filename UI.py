@@ -16,8 +16,6 @@ def nav_bar():
     elif page == "Dataset":
         render_dataset()
 
-if __name__ == "__main__":
-    render_ui()
 
 
 
