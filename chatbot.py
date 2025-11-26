@@ -21,14 +21,16 @@ def message_input():
     input_message = st.chat_input("Ask about the battery health...")
 
     if input_message :
-        gemini_response = ask_gemini(input_message)
         #save message to message state
         st.session_state.messages.append({"role": "user", "content": input_message})
         #display the message
         st.chat_message("user").write(input_message)
 
-        #pass message to backend
-        response = gemini_response
+        #loading
+        with st.spinner("Predicting SOH...")
+            gemini_response = ask_gemini(input_message)
+            #pass message to backend
+            response = gemini_response
 
         #display the bot message
         st.session_state.messages.append({"role": "bot", "content" :response})

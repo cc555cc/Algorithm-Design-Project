@@ -65,6 +65,8 @@ def ask_gemini(input):
         
         #predict SOH with battery cell data
         result = predict(battery_array)
+        print("model prediction" + str(result))
+        result = (result - int(result))*100
         question = f"""
         You are replying to a user request for predicting battery SOH.
         The ML model's prediction is: {result}%.
