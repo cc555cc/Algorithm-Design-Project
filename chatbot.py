@@ -27,7 +27,7 @@ def message_input():
         st.chat_message("user").write(input_message)
 
         #loading
-        with st.spinner("Predicting SOH...")
+        with st.spinner("thinking..."):
             gemini_response = ask_gemini(input_message)
             #pass message to backend
             response = gemini_response

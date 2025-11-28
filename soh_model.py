@@ -14,13 +14,14 @@ file = pd.read_excel('PulseBat Dataset.xlsx')
 #global variables
 current_model = None
 cell_columns = None
+df = file
 
-def train():
+def train(df):
     global current_model, cell_columns
     # ======================
     # 1. LOAD DATA
     # ======================
-    data = pd.read_excel('PulseBat Dataset.xlsx')
+    data = df
 
     # ======================
     # 2. PREPROCESSING
